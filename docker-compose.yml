@@ -1,0 +1,21 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: titanic_mysql
+    environment:
+      MYSQL_DATABASE: my_database
+      MYSQL_USER: titanic_user
+      MYSQL_PASSWORD: titanic_pass
+      MYSQL_ROOT_PASSWORD: root_pass
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+      - ./titanic.csv:/var/lib/mysql-files/titanic.csv
+    command: --secure-file-priv=/var/lib/mysql-files
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot_pass"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
